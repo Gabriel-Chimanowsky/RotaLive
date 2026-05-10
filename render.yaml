@@ -1,17 +1,17 @@
 databases:
-  - name: rotalive-db
+  - name: rotalivedb
+    plan: free
 
 services:
   - type: web
     name: rotalive-backend
     env: python
-    rootDir: backend
-    buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn -w 4 -k uvicorn.workers.UvicornWorker app.main:app
+    buildCommand: cd backend && pip install -r requirements.txt
+    startCommand: cd backend && gunicorn -w 4 -k uvicorn.workers.UvicornWorker app.main:app
     envVars:
       - key: DATABASE_URL
         fromDatabase:
-          name: rotalive-db
+          name: rotalivedb
           property: connectionString
       - key: SECRET_KEY
         generateValue: true
@@ -19,9 +19,8 @@ services:
   - type: web
     name: rotalive-frontend
     env: static
-    rootDir: frontend
-    buildCommand: npm install && npm run build
-    publishDir: dist
+    buildCommand: cd frontend && npm install && npm run build
+    publishDir: frontend/dist
     envVars:
       - key: VITE_API_URL
         value: https://rotalive-backend.onrender.com
