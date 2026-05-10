@@ -17,8 +17,9 @@ services:
         value: https://rotalive.onrender.com # Change this to your frontend URL later
 
   # --- Frontend Service ---
-  - type: static
+  - type: web
     name: rotalive-frontend
+    env: static
     buildCommand: npm install && npm run build
     publishDir: dist
     rootDir: frontend
