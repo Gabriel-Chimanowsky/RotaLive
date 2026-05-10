@@ -1,11 +1,13 @@
+databases:
+  - name: rotalive-db
+
 services:
-  # --- Backend Service ---
   - type: web
     name: rotalive-backend
     env: python
+    rootDir: backend
     buildCommand: pip install -r requirements.txt
     startCommand: gunicorn -w 4 -k uvicorn.workers.UvicornWorker app.main:app
-    rootDir: backend
     envVars:
       - key: DATABASE_URL
         fromDatabase:
@@ -13,23 +15,15 @@ services:
           property: connectionString
       - key: SECRET_KEY
         generateValue: true
-      - key: ALLOWED_ORIGINS
-        value: https://rotalive.onrender.com # Change this to your frontend URL later
 
-  # --- Frontend Service ---
   - type: web
     name: rotalive-frontend
     env: static
+    rootDir: frontend
     buildCommand: npm install && npm run build
     publishDir: dist
-    rootDir: frontend
     envVars:
       - key: VITE_API_URL
-        value: https://rotalive-backend.onrender.com # Substitua pela sua URL real do backend após o deploy
+        value: https://rotalive-backend.onrender.com
       - key: VITE_WS_URL
-        value: wss://rotalive-backend.onrender.com # Substitua pela sua URL real do backend após o deploy
-        # Note: Render usually handles ws:// to wss:// automatically if using the host property
-
-databases:
-  - name: rotalive-db
-    plan: free
+        value: wss://rotalive-backend.onrender.com
