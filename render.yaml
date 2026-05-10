@@ -25,15 +25,9 @@ services:
     rootDir: frontend
     envVars:
       - key: VITE_API_URL
-        fromService:
-          type: web
-          name: rotalive-backend
-          property: host
+        value: https://rotalive-backend.onrender.com # Substitua pela sua URL real do backend após o deploy
       - key: VITE_WS_URL
-        fromService:
-          type: web
-          name: rotalive-backend
-          property: host
+        value: wss://rotalive-backend.onrender.com # Substitua pela sua URL real do backend após o deploy
         # Note: Render usually handles ws:// to wss:// automatically if using the host property
 
 databases:
