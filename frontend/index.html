@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RotaLive — Login</title>
+  <meta name="description" content="Faça login no RotaLive para gerenciar suas entregas em tempo real." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/src/style.css" />
+</head>
+<body class="min-h-screen bg-brand-950 font-sans text-white flex items-center justify-center p-4">
+
+  <!-- Animated background blobs -->
+  <div class="fixed inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
+    <div class="absolute -top-40 -left-40 w-96 h-96 bg-brand-800/30 rounded-full blur-3xl animate-pulse-slow"></div>
+    <div class="absolute -bottom-40 -right-40 w-96 h-96 bg-neon-500/10 rounded-full blur-3xl animate-pulse-slow" style="animation-delay:2s"></div>
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-brand-700/20 rounded-full blur-3xl"></div>
+  </div>
+
+  <div class="relative w-full max-w-md animate-fade-in">
+    <!-- Logo -->
+    <div class="text-center mb-10">
+      <div class="inline-flex items-center gap-3 mb-4">
+        <div class="w-12 h-12 bg-gradient-to-br from-neon-500 to-brand-600 rounded-2xl flex items-center justify-center shadow-lg shadow-neon-500/30">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
+          </svg>
+        </div>
+        <span class="text-3xl font-bold font-poppins tracking-tight">Rota<span class="text-neon-500">Live</span></span>
+      </div>
+      <p class="text-brand-400 text-sm">Rastreamento de entregas em tempo real</p>
+    </div>
+
+    <!-- Card -->
+    <div class="glass-card rounded-2xl p-8 space-y-6">
+      <div>
+        <h1 class="text-2xl font-bold mb-1">Bem-vindo de volta</h1>
+        <p class="text-brand-400 text-sm">Entre com suas credenciais para continuar</p>
+      </div>
+
+      <!-- Role tabs -->
+      <div class="flex rounded-xl bg-brand-950/60 p-1 gap-1">
+        <button id="tab-admin" class="role-tab active flex-1 py-2 rounded-lg text-sm font-medium transition-all" data-role="admin">
+          <span class="mr-1.5">🏢</span> Admin
+        </button>
+        <button id="tab-motoboy" class="role-tab flex-1 py-2 rounded-lg text-sm font-medium transition-all" data-role="motoboy">
+          <span class="mr-1.5">🏍️</span> Motoboy
+        </button>
+      </div>
+
+      <!-- Alert -->
+      <div id="login-alert" class="hidden bg-red-500/10 border border-red-500/30 rounded-xl px-4 py-3 text-red-400 text-sm"></div>
+
+      <!-- Form -->
+      <form id="login-form" class="space-y-4" novalidate>
+        <div>
+          <label for="email" class="block text-sm font-medium text-brand-300 mb-1.5">E-mail</label>
+          <input id="email" name="email" type="email" autocomplete="email" required
+            class="input-field w-full"
+            placeholder="admin@rotalive.com" />
+        </div>
+        <div>
+          <label for="password" class="block text-sm font-medium text-brand-300 mb-1.5">Senha</label>
+          <div class="relative">
+            <input id="password" name="password" type="password" autocomplete="current-password" required
+              class="input-field w-full pr-10"
+              placeholder="••••••••" />
+            <button type="button" id="toggle-pw" class="absolute right-3 top-1/2 -translate-y-1/2 text-brand-400 hover:text-white transition-colors">
+              <svg id="eye-icon" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <button id="login-btn" type="submit" class="btn-primary w-full flex items-center justify-center gap-2 py-3">
+          <span id="login-text">Entrar</span>
+          <svg id="login-spinner" class="hidden animate-spin" width="18" height="18" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+          </svg>
+        </button>
+      </form>
+
+      <!-- Demo hint -->
+      <div class="bg-brand-900/50 rounded-xl p-3 text-center">
+        <p class="text-xs text-brand-400">
+          Demo: <span class="text-brand-200 font-mono">admin@rotalive.com</span> / <span class="text-brand-200 font-mono">Admin@2024!</span>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/pages/login.js"></script>
+</body>
+</html>

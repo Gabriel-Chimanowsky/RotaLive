@@ -1,0 +1,17 @@
+fastapi
+uvicorn[standard]
+websockets
+python-jose[cryptography]
+bcrypt
+python-multipart
+sqlalchemy
+alembic
+aiosqlite
+httpx
+python-dotenv
+pydantic[email]
+pydantic-settings
+slowapi
+aiofiles
+gunicorn
+asyncpg

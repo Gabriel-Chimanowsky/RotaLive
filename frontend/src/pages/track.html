@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>Rastrear Pedido — RotaLive</title>
+  <meta name="description" content="Acompanhe sua entrega em tempo real." />
+  <meta name="theme-color" content="#1E1B4B" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="../style.css" />
+  <style>
+    #track-map { height: calc(100vh - 320px); min-height: 260px; }
+    @media (min-height: 700px) { #track-map { height: calc(100vh - 300px); } }
+  </style>
+</head>
+<body class="min-h-screen bg-brand-950 font-sans text-white flex flex-col" id="track-body">
+
+<!-- Loading state -->
+<div id="loading-screen" class="fixed inset-0 bg-brand-950 z-50 flex flex-col items-center justify-center gap-4">
+  <div class="w-16 h-16 bg-gradient-to-br from-neon-500 to-brand-600 rounded-2xl flex items-center justify-center shadow-xl shadow-neon-500/30 animate-bounce-soft">
+    <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+  </div>
+  <p class="text-brand-300 text-sm animate-pulse">Carregando rastreamento...</p>
+</div>
+
+<!-- Error state -->
+<div id="error-screen" class="fixed inset-0 bg-brand-950 z-50 hidden flex-col items-center justify-center gap-4 p-6 text-center">
+  <div class="text-5xl">😕</div>
+  <h1 class="text-xl font-bold">Link inválido ou expirado</h1>
+  <p id="error-msg" class="text-brand-400 text-sm max-w-xs">Este link de rastreamento não é mais válido.</p>
+</div>
+
+<!-- Arrived celebration overlay -->
+<div id="arrived-overlay" class="fixed inset-0 z-50 hidden flex-col items-center justify-center p-6 text-center bg-brand-950/95 backdrop-blur-sm">
+  <div class="relative mb-6">
+    <div class="w-24 h-24 bg-neon-500/20 rounded-full flex items-center justify-center text-5xl arrived-pulse">🎉</div>
+    <div class="absolute inset-0 w-24 h-24 rounded-full border-2 border-neon-500/40 animate-ping-slow"></div>
+  </div>
+  <h1 class="text-2xl font-bold text-neon-400 mb-2">Pedido chegou!</h1>
+  <p class="text-brand-300 text-sm max-w-xs mb-6" id="arrived-subtitle">Pode descer para receber seu pedido!</p>
+  <button onclick="document.getElementById('arrived-overlay').classList.add('hidden')" class="btn-ghost px-6 py-2.5 text-sm">
+    Ver no mapa
+  </button>
+</div>
+
+<!-- Main UI -->
+<div id="main-ui" class="hidden flex-1 flex flex-col">
+
+  <!-- Store header -->
+  <header class="glass-card border-b border-white/10 px-5 py-4 flex items-center gap-3" id="store-header">
+    <img id="store-logo" src="" alt="Logo" class="hidden h-10 w-auto object-contain rounded-lg" />
+    <div class="w-9 h-9 rounded-xl flex items-center justify-center text-white font-bold text-sm hidden" id="store-logo-fallback"></div>
+    <div>
+      <p id="store-name" class="font-bold text-base leading-tight"></p>
+      <p class="text-xs text-brand-400">Rastreamento em tempo real</p>
+    </div>
+    <div class="ml-auto">
+      <div id="live-dot" class="flex items-center gap-1.5 badge-green text-xs px-2 py-0.5 rounded-full">
+        <span class="w-1.5 h-1.5 bg-neon-500 rounded-full animate-ping-slow"></span>
+        LIVE
+      </div>
+    </div>
+  </header>
+
+  <!-- Map -->
+  <div class="relative flex-1">
+    <div id="track-map"></div>
+
+    <!-- Overlay info card -->
+    <div class="absolute bottom-4 left-4 right-4 z-10 map-overlay space-y-3">
+
+      <!-- Status -->
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span id="status-emoji" class="text-2xl">🛵</span>
+          <div>
+            <p id="status-label" class="font-bold text-base">Em caminho...</p>
+            <p id="eta-text" class="text-xs text-brand-400">Calculando ETA...</p>
+          </div>
+        </div>
+        <span id="status-badge" class="badge-orange">Em trânsito</span>
+      </div>
+
+      <!-- Progress bar -->
+      <div class="space-y-1">
+        <div class="flex justify-between text-xs text-brand-400">
+          <span>Saiu da loja</span>
+          <span id="dist-label">— km</span>
+          <span>Destino</span>
+        </div>
+        <div class="w-full h-1.5 bg-brand-800 rounded-full overflow-hidden">
+          <div id="progress-bar" class="h-full bg-gradient-to-r from-neon-500 to-neon-400 rounded-full transition-all duration-1000" style="width:0%"></div>
+        </div>
+      </div>
+
+      <!-- Last update -->
+      <p id="last-update" class="text-xs text-brand-500 text-right">—</p>
+    </div>
+  </div>
+
+  <!-- Bottom info strip -->
+  <div class="glass-card border-t border-white/10 px-5 py-3 flex items-center gap-3">
+    <div id="motoboy-avatar" class="w-9 h-9 bg-brand-700 rounded-xl flex items-center justify-center font-bold text-neon-400 text-sm flex-shrink-0">M</div>
+    <div class="flex-1 min-w-0">
+      <p id="motoboy-name" class="text-sm font-medium truncate">Motoboy</p>
+      <p class="text-xs text-brand-400">Sua entrega</p>
+    </div>
+    <div id="arrived-bottom-badge" class="hidden badge-green">Chegou!</div>
+  </div>
+
+</div>
+
+<!-- Audio element for arrival sound -->
+<audio id="arrival-sound" preload="auto">
+  <source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJiVjHJtbHl1cV1PVnaipZeDaWZvlpKNe2pocZCMiXRnZXSQjo14amh4k5GNd2tnea+vpYl5cHuvrKWOgHZ9sK2mjIB3grWvqJGEenuyrahMQE5+f4d6bmBiioiGd2trfZqYkH5va3+dmpWAcGt/nJiTfm9sgp6amX1ua4OgmpeAbm2EoJqYgW9thqKamoBvboekmpeAbW6KpZiVf21rjaaXlH1sao6ml5N8bGmRp5mUfGxqk6ibln1ta5Wpmpd/bm2Xqpuan4Bwa5mqm5iBcG2bq5ucg3FunKybnYVyb52tnJ6Hc2+erp2fiHRwn6+en4l1caGwn6GKdnKjsqChinkzJi5cXWNVSkdJbG5oV0xQYoiIe2plap+dmHpqZHicmJRzZ2R5lZKOdGhnepaSj3FmZHqVko5xZmR8l5KPdmdlf5iUkXhoZ4GZlZF6amiBmpaSeWpog5uXkntqa4Wdl5N8bGqGnpeUfW1rh5+Ylny" type="audio/wav" />
+</audio>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script type="module" src="/src/pages/track.js"></script>
+</body>
+</html>

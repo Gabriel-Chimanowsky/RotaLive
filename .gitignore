@@ -1,0 +1,22 @@
+# Root .gitignore for RotaLive
+
+# Python
+backend/venv/
+backend/__pycache__/
+backend/*.pyc
+backend/rotalive.db
+backend/uploads/*
+!backend/uploads/logos/
+backend/.env
+
+# Node
+frontend/node_modules/
+frontend/dist/
+frontend/.env
+frontend/.env.local
+
+# OS
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
