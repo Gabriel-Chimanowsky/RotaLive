@@ -1,5 +1,5 @@
 import '../style.css';
-import { api, setToken, isLoggedIn, getRole, clearToken } from '../api.js';
+import { api, setToken, isLoggedIn, getRole, clearToken, API_BASE } from '../api.js';
 
 // Redirect if already logged in
 if (isLoggedIn()) {
@@ -50,8 +50,8 @@ form.addEventListener('submit', async (e) => {
   spinner.classList.remove('hidden');
 
   try {
-    // FastAPI uses form-data for OAuth2
-    const res = await fetch(`http://localhost:8000/api/auth/login`, {
+    // Use API_BASE instead of localhost
+    const res = await fetch(`${API_BASE}/api/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: new URLSearchParams({ username: email, password }),

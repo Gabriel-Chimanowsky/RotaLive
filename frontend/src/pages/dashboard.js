@@ -1,6 +1,6 @@
 /* global L */
 import '../style.css';
-import { api, clearToken, getToken, getRole, isLoggedIn, STATUS_LABELS, STATUS_BADGE, formatDate, formatTime } from '../api.js';
+import { api, clearToken, getToken, getRole, isLoggedIn, STATUS_LABELS, STATUS_BADGE, formatDate, formatTime, API_BASE } from '../api.js';
 
 // Auth guard
 if (!isLoggedIn() || getRole() !== 'admin') {
@@ -45,7 +45,7 @@ function applyBranding(store) {
   const logoEl = document.getElementById('sidebar-brand-logo');
   const defLogo = document.getElementById('sidebar-default-logo');
   if (logoEl && store.logo_path) {
-    logoEl.src = `http://localhost:8000${store.logo_path}`;
+    logoEl.src = `${API_BASE}${store.logo_path}`;
     logoEl.classList.remove('hidden');
     defLogo.classList.add('hidden');
   } else if (logoEl) {
@@ -322,7 +322,7 @@ function loadWhiteLabel() {
   document.getElementById('tpl-arrived').value = tpls.arrived || '';
   if (storeData.logo_path) {
     const img = document.getElementById('logo-preview');
-    img.src = `http://localhost:8000${storeData.logo_path}`;
+    img.src = `${API_BASE}${storeData.logo_path}`;
     img.classList.remove('hidden');
     document.getElementById('logo-placeholder').classList.add('hidden');
   }
@@ -426,7 +426,7 @@ document.getElementById('upload-logo-btn').addEventListener('click', async () =>
   if (!file) return;
   const form = new FormData();
   form.append('file', file);
-  const res = await fetch('http://localhost:8000/api/stores/me/logo', {
+  const res = await fetch(`${API_BASE}/api/stores/me/logo`, {
     method: 'POST',
     headers: { 'Authorization': `Bearer ${getToken()}` },
     body: form,
